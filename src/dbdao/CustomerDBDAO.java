@@ -1,4 +1,4 @@
-package b.DBDAO;
+package dbdao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,13 +8,13 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import a.Connection.ConnectionPool;
-import b.DAO.CustomerDAO;
-import b.Enum.CouponType;
-import b.beans.Coupon;
-import b.beans.Customer;
+import beans.Coupon;
+import beans.Customer;
+import connection.ConnectionPool;
 import core.exceptions.CouponSystemException;
 import core.exceptions.CustomerNotFound;
+import dao.CustomerDAO;
+import enumPackage.CouponType;
 
 public class CustomerDBDAO implements CustomerDAO {
 

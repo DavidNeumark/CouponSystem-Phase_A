@@ -1,10 +1,10 @@
-package b.DAO;
+package dao;
 
 import java.sql.SQLException;
 import java.util.Set;
 
-import b.beans.Coupon;
-import b.beans.Customer;
+import beans.Coupon;
+import beans.Customer;
 import core.exceptions.CouponSystemException;
 
 public interface CustomerDAO {

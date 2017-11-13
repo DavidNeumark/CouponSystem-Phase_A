@@ -1,9 +1,9 @@
-package b.beans;
+package beans;
 
 import java.util.Date;
 
-import b.Enum.CouponType;
 import core.exceptions.MoreThanOneCouponException;
+import enumPackage.CouponType;
 
 public class Coupon {
 

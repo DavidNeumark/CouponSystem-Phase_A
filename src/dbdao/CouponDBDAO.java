@@ -1,4 +1,4 @@
-package b.DBDAO;
+package dbdao;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -10,14 +10,14 @@ import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
-import a.Connection.ConnectionPool;
-import b.DAO.CouponDAO;
-import b.Enum.CouponType;
-import b.beans.Company;
-import b.beans.Coupon;
-import b.beans.Customer;
+import beans.Company;
+import beans.Coupon;
+import beans.Customer;
+import connection.ConnectionPool;
 import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
+import dao.CouponDAO;
+import enumPackage.CouponType;
 
 /**
  * @author D.Neumark

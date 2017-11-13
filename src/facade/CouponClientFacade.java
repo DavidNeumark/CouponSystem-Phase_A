@@ -1,11 +1,11 @@
-package d.Facade;
+package facade;
 
 import java.sql.SQLException;
 
-import b.Enum.ClientType;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
 import core.exceptions.CustomerNotFound;
+import enumPackage.ClientType;
 
 /**
  * @author D.Neumark

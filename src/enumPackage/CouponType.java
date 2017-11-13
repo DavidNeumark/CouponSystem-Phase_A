@@ -1,4 +1,4 @@
-package b.Enum;
+package enumPackage;
 
 public enum CouponType {
 

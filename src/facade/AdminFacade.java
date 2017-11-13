@@ -1,14 +1,11 @@
-package d.Facade;
+package facade;
 
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-import b.DBDAO.CompanyDBDAO;
-import b.DBDAO.CustomerDBDAO;
-import b.Enum.ClientType;
-import b.beans.Company;
-import b.beans.Customer;
+import beans.Company;
+import beans.Customer;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
@@ -16,6 +13,9 @@ import core.exceptions.CreateCompanyExcetion;
 import core.exceptions.CustomerNotFound;
 import core.exceptions.DuplicateNameExcetion;
 import core.exceptions.UpdateCompanyException;
+import dbdao.CompanyDBDAO;
+import dbdao.CustomerDBDAO;
+import enumPackage.ClientType;
 
 /**
  * @author David Neumark

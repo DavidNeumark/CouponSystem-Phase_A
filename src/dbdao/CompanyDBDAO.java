@@ -1,4 +1,4 @@
-package b.DBDAO;
+package dbdao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,14 +8,14 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import a.Connection.ConnectionPool;
-import b.DAO.CompanyDao;
-import b.Enum.CouponType;
-import b.beans.Company;
-import b.beans.Coupon;
+import beans.Company;
+import beans.Coupon;
+import connection.ConnectionPool;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
 import core.exceptions.UpdateCompanyException;
+import dao.CompanyDao;
+import enumPackage.CouponType;
 
 /**
  * @author D.Neumark
