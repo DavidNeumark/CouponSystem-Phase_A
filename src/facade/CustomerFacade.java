@@ -1,21 +1,21 @@
-package d.Facade;
+package facade;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import b.DBDAO.CouponDBDAO;
-import b.DBDAO.CustomerDBDAO;
-import b.Enum.ClientType;
-import b.Enum.CouponType;
-import b.beans.Coupon;
-import b.beans.Customer;
+import beans.Coupon;
+import beans.Customer;
 import core.exceptions.CouponSystemException;
 import core.exceptions.CustomerNotFound;
 import core.exceptions.EndDateException;
 import core.exceptions.MoreThanOneCouponException;
 import core.exceptions.PurchasedException;
+import dbdao.CouponDBDAO;
+import dbdao.CustomerDBDAO;
+import enumPackage.ClientType;
+import enumPackage.CouponType;
 
 /**
  * @author D.Neumark

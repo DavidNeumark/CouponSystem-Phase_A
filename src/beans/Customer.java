@@ -1,4 +1,4 @@
-package b.beans;
+package beans;
 
 import java.util.HashSet;
 import java.util.Set;

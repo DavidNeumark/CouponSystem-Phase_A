@@ -1,16 +1,16 @@
-package d.CouponSystemSingleton;
+package couponSystemSingleton;
 
 import java.sql.SQLException;
 
-import b.Enum.ClientType;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
 import core.exceptions.CustomerNotFound;
-import d.Facade.AdminFacade;
-import d.Facade.CompanyFacade;
-import d.Facade.CouponClientFacade;
-import d.Facade.CustomerFacade;
-import d.Thread.DailyCouponExpirationTask;
+import couponSystemThread.DailyCouponExpirationTask;
+import enumPackage.ClientType;
+import facade.AdminFacade;
+import facade.CompanyFacade;
+import facade.CouponClientFacade;
+import facade.CustomerFacade;
 
 public class CouponSystem {
 

@@ -1,12 +1,12 @@
-package b.DAO;
+package dao;
 
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Set;
 
-import b.Enum.CouponType;
-import b.beans.Coupon;
+import beans.Coupon;
 import core.exceptions.CouponSystemException;
+import enumPackage.CouponType;
 
 public interface CouponDAO {
 

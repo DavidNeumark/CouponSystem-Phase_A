@@ -1,4 +1,4 @@
-package d.Facade;
+package facade;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -6,15 +6,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import b.DBDAO.CompanyDBDAO;
-import b.DBDAO.CouponDBDAO;
-import b.Enum.ClientType;
-import b.Enum.CouponType;
-import b.beans.Company;
-import b.beans.Coupon;
+import beans.Company;
+import beans.Coupon;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
+import dbdao.CompanyDBDAO;
+import dbdao.CouponDBDAO;
+import enumPackage.ClientType;
+import enumPackage.CouponType;
 
 /**
  * @author D.Neumark

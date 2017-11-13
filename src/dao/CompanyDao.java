@@ -1,11 +1,11 @@
-package b.DAO;
+package dao;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
-import b.beans.Company;
-import b.beans.Coupon;
+import beans.Company;
+import beans.Coupon;
 import core.exceptions.CouponSystemException;
 
 /**

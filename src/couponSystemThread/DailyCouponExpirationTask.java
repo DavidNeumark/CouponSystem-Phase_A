@@ -1,11 +1,11 @@
-package d.Thread;
+package couponSystemThread;
 
 import java.util.Date;
 import java.util.Set;
 
-import b.DBDAO.CouponDBDAO;
-import b.beans.Coupon;
+import beans.Coupon;
 import core.exceptions.CouponSystemException;
+import dbdao.CouponDBDAO;
 
 /**
  * @author David Neumark
