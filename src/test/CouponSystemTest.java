@@ -108,8 +108,7 @@ public class CouponSystemTest {
 		System.out.println(customerFacade.getAllPurchasedCouponByType(CouponType.HEALTH));
 		System.out.println(customerFacade.getAllPurchasedCouponByPrice(coupon13.getPrice()));
 
-		CouponSystem couponSystem = null;
-		couponSystem.shutdown();
+		CouponSystem.getInstance().shutdown();
 	}
 
 	private static java.sql.Date convertUtilToSql(java.util.Date uDate) {
