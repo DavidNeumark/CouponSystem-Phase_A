@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class PurchasedException extends Exception {
+public class PurchasedException extends CouponSystemException {
 
 	/**
 	 * 

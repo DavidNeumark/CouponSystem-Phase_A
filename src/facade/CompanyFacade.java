@@ -1,15 +1,11 @@
 package facade;
 
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import beans.Company;
 import beans.Coupon;
-import core.exceptions.CompanyNotFound;
-import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
 import dbdao.CompanyDBDAO;
 import dbdao.CouponDBDAO;
@@ -28,8 +24,10 @@ public class CompanyFacade implements CouponClientFacade {
 
 	/**
 	 * CompanyFacade CTOR
+	 * 
+	 * @throws CouponSystemException
 	 */
-	public CompanyFacade() {
+	public CompanyFacade() throws CouponSystemException {
 		couponDBDAO = new CouponDBDAO();
 		companyDBDAO = new CompanyDBDAO();
 	}
@@ -41,10 +39,8 @@ public class CompanyFacade implements CouponClientFacade {
 	 * @param coupon
 	 * @return a coupon object
 	 * @throws CouponSystemException
-	 * @throws ParseException
-	 * @throws CouponNotFound
 	 */
-	public Coupon createCoupon(Coupon coupon) throws CouponSystemException, ParseException, CouponNotFound {
+	public Coupon createCoupon(Coupon coupon) throws CouponSystemException {
 
 		Coupon couponChecked = this.couponDBDAO.getCouponByTitle(coupon.getTitle());
 
@@ -101,14 +97,14 @@ public class CompanyFacade implements CouponClientFacade {
 
 	/**
 	 * This method gets from the database a list with the data of all coupons in the
-	 * system.
+	 * system of a particular Company.
 	 * 
 	 * @return a collection of coupons
 	 * @throws CouponSystemException
 	 */
 	public Set<Coupon> getAllCoupons() throws CouponSystemException {
 
-		return couponDBDAO.getAllCoupons(this.company);
+		return couponDBDAO.getAllCoupons(company);
 	}
 
 	/**
@@ -158,7 +154,7 @@ public class CompanyFacade implements CouponClientFacade {
 	 * This method gets from the database a list of all coupons in the system up to
 	 * the specified date.
 	 * 
-	 * @param endDate
+	 * @param date
 	 * @return list of coupons
 	 * @throws CouponSystemException
 	 */
@@ -177,7 +173,14 @@ public class CompanyFacade implements CouponClientFacade {
 		return getCouponByExpirationDate;
 	}
 
-	public Coupon getCouponByTitle(String _title) throws CouponNotFound {
+	/**
+	 * Gets the coupon object by the title
+	 * 
+	 * @param _title
+	 * @return
+	 * @throws CouponSystemException
+	 */
+	public Coupon getCouponByTitle(String _title) throws CouponSystemException {
 
 		return couponDBDAO.getCouponByTitle(_title);
 	}
@@ -189,8 +192,7 @@ public class CompanyFacade implements CouponClientFacade {
 	 * b.Enum.ClientType)
 	 */
 	@Override
-	public CouponClientFacade login(String name, String password, ClientType clientType)
-			throws SQLException, CouponSystemException, CompanyNotFound {
+	public CouponClientFacade login(String name, String password, ClientType clientType) throws CouponSystemException {
 
 		if (!name.equals("") && !password.equals("")) {
 			if (this.companyDBDAO.login(name, password)) {

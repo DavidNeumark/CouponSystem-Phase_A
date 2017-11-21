@@ -9,12 +9,24 @@ public class Customer {
 	private String custName;
 	private String custEmail;
 	private String password;
-	Set<Coupon> coupons = new HashSet<>();
+	private Set<Coupon> coupons = new HashSet<>();
 
+	/**
+	 * Class CTOR
+	 */
 	public Customer() {
 		super();
 	}
 
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param iD
+	 * @param custName
+	 * @param custEmail
+	 * @param password
+	 * @param coupons
+	 */
 	public Customer(long iD, String custName, String custEmail, String password, Set<Coupon> coupons) {
 		super();
 		ID = iD;
@@ -24,6 +36,14 @@ public class Customer {
 		this.coupons = coupons;
 	}
 
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param custName
+	 * @param custEmail
+	 * @param password
+	 * @param coupons
+	 */
 	public Customer(String custName, String custEmail, String password, Set<Coupon> coupons) {
 		super();
 		this.custName = custName;
@@ -32,6 +52,14 @@ public class Customer {
 		this.coupons = coupons;
 	}
 
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param iD
+	 * @param custName
+	 * @param custEmail
+	 * @param password
+	 */
 	public Customer(long iD, String custName, String custEmail, String password) {
 		super();
 		ID = iD;
@@ -83,7 +111,7 @@ public class Customer {
 	@Override
 	public String toString() {
 		return "Customer [ID=" + ID + ", custName=" + custName + ", custEmail=" + custEmail + ", password=" + password
-				+ ", coupons=" + coupons + "]";
+				+ "]";
 	}
 
 	@Override

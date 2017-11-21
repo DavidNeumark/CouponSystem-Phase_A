@@ -1,10 +1,6 @@
 package facade;
 
-import java.sql.SQLException;
-
-import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
-import core.exceptions.CustomerNotFound;
 import enumPackage.ClientType;
 
 /**
@@ -19,12 +15,9 @@ public interface CouponClientFacade {
 	 * @param name
 	 * @param password
 	 * @param clientType
-	 * @throws SQLException
+	 * @return a boolean value
 	 * @throws CouponSystemException
-	 * @throws CompanyNotFound
-	 * @throws CustomerNotFound
 	 */
-	public CouponClientFacade login(String name, String password, ClientType clientType)
-			throws SQLException, CouponSystemException, CompanyNotFound, CustomerNotFound;
+	public CouponClientFacade login(String name, String password, ClientType clientType) throws CouponSystemException;
 
 }

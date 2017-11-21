@@ -5,27 +5,31 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import core.exceptions.CouponSystemException;
+
 /**
- * @author David Neumark
+ * @author D.Neumark
  */
 public class CouponSystemDatabase {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CouponSystemException {
 
 		String driverName = "org.apache.derby.jdbc.ClientDriver";
+		// String driverName = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("connection failed", e1);
+			throw ex;
 		}
 
 		// URL to the database
 		String url = "jdbc:derby://localhost:1527/db2; create=true";
+		// String url = "jdbc:mysql://localhost:3306/db1";
 		String sql = null;
 
 		// connect
-		try (Connection con = DriverManager.getConnection(url);) {
+		try (Connection con = DriverManager.getConnection(url, "root", "root");) {
 
 			System.out.println("connected to " + url);
 
@@ -57,8 +61,8 @@ public class CouponSystemDatabase {
 			stmt.executeUpdate(sql);
 
 		} catch (SQLException e) {
-			System.out.println(sql);
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("There issues to create the database.", e);
+			throw ex;
 		}
 
 		System.out.println("disconnected from " + url);

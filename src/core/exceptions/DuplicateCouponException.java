@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class DuplicateCouponException extends Exception {
+public class DuplicateCouponException extends CouponSystemException {
 
 	/**
 	 * 

@@ -19,10 +19,26 @@ public class Coupon {
 
 	private java.util.Date sqlDate;
 
+	/**
+	 * Class CTOR
+	 */
 	public Coupon() {
 		super();
 	}
 
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param iD
+	 * @param title
+	 * @param startDate
+	 * @param endDate
+	 * @param amount
+	 * @param type
+	 * @param message
+	 * @param price
+	 * @param image
+	 */
 	public Coupon(long iD, String title, Date startDate, Date endDate, int amount, CouponType type, String message,
 			double price, String image) {
 		super();
@@ -37,6 +53,18 @@ public class Coupon {
 		this.image = image;
 	}
 
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param title
+	 * @param startDate
+	 * @param endDate
+	 * @param amount
+	 * @param type
+	 * @param message
+	 * @param price
+	 * @param image
+	 */
 	public Coupon(String title, Date startDate, Date endDate, int amount, CouponType type, String message, double price,
 			String image) {
 		super();

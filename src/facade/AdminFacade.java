@@ -1,24 +1,19 @@
 package facade;
 
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
 import beans.Company;
 import beans.Customer;
-import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
-import core.exceptions.CreateCompanyExcetion;
-import core.exceptions.CustomerNotFound;
 import core.exceptions.DuplicateNameExcetion;
-import core.exceptions.UpdateCompanyException;
 import dbdao.CompanyDBDAO;
 import dbdao.CustomerDBDAO;
 import enumPackage.ClientType;
 
 /**
- * @author David Neumark
+ * @author D.Neumark
  */
 public class AdminFacade implements CouponClientFacade {
 
@@ -27,8 +22,10 @@ public class AdminFacade implements CouponClientFacade {
 
 	/**
 	 * AdmninFacade CTOR
+	 * 
+	 * @throws CouponSystemException
 	 */
-	public AdminFacade() {
+	public AdminFacade() throws CouponSystemException {
 		companyDBDAO = new CompanyDBDAO();
 		customerDBDAO = new CustomerDBDAO();
 	}
@@ -40,13 +37,12 @@ public class AdminFacade implements CouponClientFacade {
 	 * b.Enum.ClientType)
 	 */
 	@Override
-	public CouponClientFacade login(String name, String password, ClientType clientType)
-			throws SQLException, CouponSystemException {
+	public CouponClientFacade login(String name, String password, ClientType clientType) throws CouponSystemException {
 
 		if (name.equals("admin") && password.equals("1234") && clientType == ClientType.ADMIN) {
 			return this;
 		} else {
-			throw new CouponSystemException("Login failed");
+			throw new CouponSystemException("Login failed!");
 		}
 
 	}
@@ -57,44 +53,45 @@ public class AdminFacade implements CouponClientFacade {
 	 * @param comp
 	 * @return a company object
 	 * @throws CouponSystemException
-	 * @throws CreateCompanyExcetion
-	 * @throws SQLException
 	 */
-	public Company createCompany(Company comp) throws CouponSystemException, CreateCompanyExcetion, SQLException {
+	public Company createCompany(Company comp) throws CouponSystemException {
 
 		Set<Company> companies = companyDBDAO.getAllCompanies();
 		boolean checker = true;
 
-		if (!companies.isEmpty()) {
+		try {
+			if (!companies.isEmpty()) {
 
-			// checking if the company name already exists in the database. If this name
-			// already exists in the database, the attribute "checker" will receive "false".
-			for (Company company : companies) {
-				if (company.getName().equals(comp.getName())) {
-					checker = false;
-					break;
+				// checking if the company name already exists in the database. If this name
+				// already exists in the database, the attribute "checker" will receive "false".
+				for (Company company : companies) {
+					if (company.getName().equals(comp.getName())) {
+						checker = false;
+						break;
+					}
 				}
 			}
+			if (checker) {
+				return companyDBDAO.createCompany(comp);
+			}
+		} catch (CouponSystemException e) {
+			CouponSystemException ex = new CouponSystemException(
+					"Name " + comp.getName() + " already exist on the data base", e);
+			throw ex;
 		}
-		if (checker) {
-			return companyDBDAO.createCompany(comp);
-
-		} else {
-			System.out.println("Name " + comp.getName() + " already exist on the data base");
-			throw new DuplicateNameExcetion("Name " + comp.getName() + " already exist on the data base");
-		}
+		return null;
 	}
 
 	/**
 	 * Deletes the company data from the database.
 	 * 
-	 * @param Company
-	 * @exception SQLException.
-	 * @throws CouponSystemException,
-	 *             CompanyNameComparator.
-	 * @throws SQLException
+	 * @param company
+	 *            this the company object that will be deleted
+	 * @throws CouponSystemException
+	 *             if the company was not deleted, the CouponSystemException will
+	 *             appear
 	 */
-	public void deleteCompany(Company company) throws CouponSystemException, SQLException {
+	public void deleteCompany(Company company) throws CouponSystemException {
 
 		companyDBDAO.deleteCompany(company);
 
@@ -106,9 +103,10 @@ public class AdminFacade implements CouponClientFacade {
 	 * 
 	 * @param company
 	 * @throws CouponSystemException
-	 * @throws UpdateCompanyException
+	 *             if the update is not done, then the system will throws the
+	 *             exception
 	 */
-	public void updateCompany(Company company) throws CouponSystemException, UpdateCompanyException {
+	public void updateCompany(Company company) throws CouponSystemException {
 
 		companyDBDAO.updateCompany(company);
 
@@ -120,9 +118,8 @@ public class AdminFacade implements CouponClientFacade {
 	 * @param id
 	 * @return Company object
 	 * @throws CouponSystemException
-	 * @throws SQLException
 	 */
-	public Company getCompany(long id) throws CouponSystemException, SQLException {
+	public Company getCompany(long id) throws CouponSystemException {
 
 		Company company = companyDBDAO.getCompany(id);
 		return company;
@@ -133,15 +130,23 @@ public class AdminFacade implements CouponClientFacade {
 	 * database.
 	 * 
 	 * @return a collection of Company("companies").
+	 * @throws CouponSystemException
 	 */
-	public Set<Company> getAllCompanies() {
+	public Set<Company> getAllCompanies() throws CouponSystemException {
 
 		Set<Company> companies = new HashSet<>();
 		companies = companyDBDAO.getAllCompanies();
 		return companies;
 	}
 
-	public Company getCompanyByName(String companyName) throws CompanyNotFound, CouponNotFound {
+	/**
+	 * Gets the company object by the company name
+	 * 
+	 * @param companyName
+	 * @return the company object
+	 * @throws CouponSystemException
+	 */
+	public Company getCompanyByName(String companyName) throws CouponSystemException {
 		Company company = new Company();
 
 		company = companyDBDAO.getCompanyByName(companyName);
@@ -153,7 +158,13 @@ public class AdminFacade implements CouponClientFacade {
 
 	}
 
-	public void getCompanyIdByName(Company company) {
+	/**
+	 * Gets the company id by the company object using the String company name
+	 * 
+	 * @param company
+	 * @throws CouponSystemException
+	 */
+	public void getCompanyIdByName(Company company) throws CouponSystemException {
 
 		companyDBDAO.getCompanyIdByName(company);
 
@@ -184,8 +195,9 @@ public class AdminFacade implements CouponClientFacade {
 			customerDBDAO.createCustomer(customer);
 
 		} else {
-			System.out.println("Name " + customer.getCustName() + " already exist on the data base");
-			throw new DuplicateNameExcetion("Name " + customer.getCustName() + " already exist on the data base");
+			throw new DuplicateNameExcetion("The client: " + customer.getCustName()
+					+ " could not be created, because this name already exists in the database. ");
+
 		}
 	}
 
@@ -225,7 +237,7 @@ public class AdminFacade implements CouponClientFacade {
 		return customerDBDAO.getCustomer(id);
 	}
 
-	public Customer getCustomerByName(String customerName) throws CustomerNotFound, CouponNotFound {
+	public Customer getCustomerByName(String customerName) throws CouponSystemException {
 		Customer customer = new Customer();
 
 		customer = customerDBDAO.getCustomerByName(customerName);

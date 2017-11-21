@@ -22,21 +22,23 @@ public class CustomerDBDAO implements CustomerDAO {
 
 	/**
 	 * Class CTOR
+	 * 
+	 * @throws CouponSystemException
 	 */
-	public CustomerDBDAO() {
+	public CustomerDBDAO() throws CouponSystemException {
 		pool = ConnectionPool.getInstance();
 	}
 
 	/**
 	 * Login into the customer account.
 	 * 
-	 * @param customerName
-	 * @param password
-	 * @return
+	 * @param custName
+	 * @param custPassword
+	 * @return boolean
 	 * @throws CouponSystemException
 	 */
 	@Override
-	public Boolean login(String custName, String custPassword) {
+	public Boolean login(String custName, String custPassword) throws CouponSystemException {
 
 		String sql = "select password from customers where cust_name = ?";
 
@@ -59,7 +61,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("Can't login at this account.", e);
+			throw ex;
 		}
 		return false;
 	}
@@ -88,7 +91,7 @@ public class CustomerDBDAO implements CustomerDAO {
 					customer.setID(gk.getLong(1));
 					return customer;
 				} else {
-					throw new CouponSystemException("Key wasn't Gen in Customer table.");
+					throw new CouponSystemException("Key wasn't generated in Customer table.");
 				}
 
 			} else {
@@ -96,9 +99,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			e.printStackTrace();
-			throw new CouponSystemException("can't create the customer", e);
+			CouponSystemException ex = new CouponSystemException("Can't create the customer.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -107,11 +109,12 @@ public class CustomerDBDAO implements CustomerDAO {
 	/**
 	 * Sets a new coupon into customerCoupon table.
 	 * 
-	 * @param Coupon
-	 * @exception SQLException.
-	 * @throws CouponSystemException.
+	 * @param cust_id
+	 * @param coupon_id
+	 * @return a boolean value
+	 * @throws CouponSystemException
 	 */
-	public boolean createCustomerCoupon(long cust_id, long coupon_id) throws SQLException, CouponSystemException {
+	public boolean createCustomerCoupon(long cust_id, long coupon_id) throws CouponSystemException {
 
 		String sql = "insert into customerCoupon(cust_id, coupons_id) values(?, ?)";
 		Connection con = this.pool.getConnection();
@@ -128,9 +131,9 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("Coupon ID: " + coupon_id + " was not inserted.", e);
 
+			CouponSystemException ex = new CouponSystemException("Coupon ID: \" + coupon_id + \" was not inserted.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -157,13 +160,21 @@ public class CustomerDBDAO implements CustomerDAO {
 			pstmt2.executeUpdate();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("Can't purchase the coupon.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
 	}
 
-	public Boolean outOfStockCoupon(Coupon coupon) {
+	/**
+	 * This method check if the coupon is out of "stock"
+	 * 
+	 * @param coupon
+	 * @return a boolean value
+	 * @throws CouponSystemException
+	 */
+	public Boolean outOfStockCoupon(Coupon coupon) throws CouponSystemException {
 
 		Connection con = this.pool.getConnection();
 		boolean checker = false;
@@ -177,7 +188,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			rs.next();
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("This coupon is out of stock!", e);
+			throw ex;
 		}
 
 		return checker;
@@ -212,8 +224,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			pstmt2.executeUpdate();
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("can't delete Customer data from the database", e);
+			CouponSystemException ex = new CouponSystemException("Can't delete the customer.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -236,8 +248,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			pstmt.setLong(3, customer.getID());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("updateCustomer failed", e);
+			CouponSystemException ex = new CouponSystemException("Can't update the customer.", e);
+			throw ex;
 		} finally {
 			if (con != null)
 				this.pool.returnConnection(con);
@@ -272,8 +284,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			customer = new Customer(id1, custName, custEmail, password);
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("can't get the customer data - getCustomer failed", e);
+			CouponSystemException ex = new CouponSystemException("Can't get the customer data.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -281,11 +293,13 @@ public class CustomerDBDAO implements CustomerDAO {
 	}
 
 	/**
+	 * Get all attributes of the customer by his name
+	 * 
 	 * @param cust_name
 	 * @return a customer object containing even its ID.
-	 * @throws CustomerNotFound
+	 * @throws CouponSystemException
 	 */
-	public Customer getCustomerByName(String cust_name) throws CustomerNotFound {
+	public Customer getCustomerByName(String cust_name) throws CouponSystemException {
 
 		String sql = "select * from customers where cust_name = ?";
 
@@ -309,20 +323,20 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Can't get the customer data from the database.");
+			CouponSystemException ex = new CouponSystemException("Can't get the customer data from the database.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
-		return null;
 	}
 
 	/**
 	 * Gets from the database the id of the customer according to the client's name.
 	 * 
 	 * @param customer
+	 * @throws CouponSystemException
 	 */
-	public void getCustomerIdByName(Customer customer) {
+	public void getCustomerIdByName(Customer customer) throws CouponSystemException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select id from customers where cust_name = ?";
 
@@ -338,8 +352,8 @@ public class CustomerDBDAO implements CustomerDAO {
 			customer.setID(id);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Can't get the id of this customer");
+			CouponSystemException ex = new CouponSystemException("Can't get the id of this customer by his name.", e);
+			throw ex;
 		} finally {
 			pool.returnConnection(con);
 		}
@@ -375,13 +389,13 @@ public class CustomerDBDAO implements CustomerDAO {
 			}
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			System.out.println("Can't load the list of coupons.");
+			CouponSystemException ex = new CouponSystemException("Can't load the list of coupons.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
 		if (customers.isEmpty()) {
-			System.out.println("Company table in the database is empty.");
+			System.out.println("Customers table in the database is empty.");
 		}
 		return customers;
 
@@ -392,11 +406,10 @@ public class CustomerDBDAO implements CustomerDAO {
 	 * 
 	 * @param customer
 	 * @return collection of coupons
-	 * @throws SQLException
 	 * @throws CouponSystemException
 	 */
 	@Override
-	public Set<Coupon> getCoupons(Customer customer) throws SQLException, CouponSystemException {
+	public Set<Coupon> getCoupons(Customer customer) throws CouponSystemException {
 
 		Set<Coupon> coupons = new HashSet<>();
 
@@ -404,11 +417,7 @@ public class CustomerDBDAO implements CustomerDAO {
 
 		Connection con = this.pool.getConnection();
 
-		try (
-
-				PreparedStatement pstmt1 = con.prepareStatement(sql1);
-
-		) {
+		try (PreparedStatement pstmt1 = con.prepareStatement(sql1);) {
 
 			pstmt1.setLong(1, customer.getID());
 			ResultSet rs = pstmt1.executeQuery();
@@ -428,8 +437,8 @@ public class CustomerDBDAO implements CustomerDAO {
 				coupons.add(c);
 			}
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("can't get the coupons of this company", e);
+			CouponSystemException ex = new CouponSystemException("Can't get the coupons of this customer.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}

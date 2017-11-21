@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class MoreThanOneCouponException extends RuntimeException {
+public class MoreThanOneCouponException extends CouponSystemException {
 
 	/**
 	 * 
@@ -22,7 +22,8 @@ public class MoreThanOneCouponException extends RuntimeException {
 		super(message, cause);
 	}
 
-	public MoreThanOneCouponException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public MoreThanOneCouponException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

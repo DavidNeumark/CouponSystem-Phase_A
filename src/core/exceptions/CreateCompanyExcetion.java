@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class CreateCompanyExcetion extends Exception {
+public class CreateCompanyExcetion extends CouponSystemException {
 
 	/**
 	 * 

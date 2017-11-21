@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -18,65 +17,61 @@ public interface CompanyDao {
 	 * Sets a new company data in the companies database table.
 	 * 
 	 * @param company
-	 * @return
-	 * @throws SQLException
+	 * @return Company
 	 * @throws CouponSystemException
 	 */
-	public Company createCompany(Company company) throws SQLException, CouponSystemException;
+	public Company createCompany(Company company) throws CouponSystemException;
 
 	/**
 	 * Deletes the company data.
 	 * 
 	 * @param company
-	 * @throws SQLException
 	 * @throws CouponSystemException
 	 */
-	public void deleteCompany(Company company) throws SQLException, CouponSystemException;
+	public void deleteCompany(Company company) throws CouponSystemException;
 
 	/**
 	 * Update the company data (password, email) in the database.
 	 * 
 	 * @param company
-	 * @throws SQLException
+	 * @throws CouponSystemException
 	 */
-	public void updateCompany(Company company) throws SQLException;
+	public void updateCompany(Company company) throws CouponSystemException;
 
 	/**
 	 * Gets the data of the company from the database using the id.
 	 * 
 	 * @param ID
-	 * @return
-	 * @throws SQLException
+	 * @return a company object
 	 * @throws CouponSystemException
 	 */
-	public Company getCompany(long ID) throws SQLException, CouponSystemException;
+	public Company getCompany(long ID) throws CouponSystemException;
 
 	/**
 	 * Gets the data of all the companies in system.
 	 * 
-	 * @return
-	 * @throws SQLException
+	 * @return get company data
+	 * @throws CouponSystemException
 	 */
-	public Set<Company> getAllCompanies() throws SQLException;
+	public Set<Company> getAllCompanies() throws CouponSystemException;
 
 	/**
 	 * Gets the data of all coupons from the database.
 	 * 
 	 * @param company
-	 * @return
-	 * @throws SQLException
+	 * @return list of all companies in the system
+	 * @throws CouponSystemException
 	 */
-	public Collection<Coupon> getCoupons(Company company) throws SQLException;
+	public Collection<Coupon> getCoupons(Company company) throws CouponSystemException;
 
 	/**
 	 * Login into a Company account.
 	 * 
 	 * @param compName
 	 * @param password
-	 * @return
-	 * @throws SQLException
+	 * @return a boolean value
 	 * @throws CouponSystemException
 	 */
-	public boolean login(String compName, String password) throws SQLException, CouponSystemException;
+	public boolean login(String compName, String password) throws CouponSystemException;
 
 }
