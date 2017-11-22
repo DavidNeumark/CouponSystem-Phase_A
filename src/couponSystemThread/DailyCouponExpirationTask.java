@@ -8,14 +8,14 @@ import core.exceptions.CouponSystemException;
 import dbdao.CouponDBDAO;
 
 /**
- * @author David Neumark
+ * @author D.Neumark
  */
 public class DailyCouponExpirationTask implements Runnable {
 
 	private Boolean booleanQuit = false;
 	private static CouponDBDAO couponDBDAO;
 
-	public DailyCouponExpirationTask() {
+	public DailyCouponExpirationTask() throws CouponSystemException {
 		this.couponDBDAO = new CouponDBDAO();
 	}
 

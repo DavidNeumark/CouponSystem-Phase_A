@@ -1,14 +1,12 @@
 package core.exceptions;
 
-public class NullException extends Exception {
-
+public class NullException extends CouponSystemException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	public NullException() {
 	}
 
@@ -28,13 +26,4 @@ public class NullException extends Exception {
 		super(arg0, arg1, arg2, arg3);
 	}
 
-	
-	
-	
-	
-
-	
-	
-	
-	
 }

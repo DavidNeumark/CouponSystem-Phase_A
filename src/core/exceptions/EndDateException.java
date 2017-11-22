@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class EndDateException extends RuntimeException {
+public class EndDateException extends CouponSystemException {
 
 	/**
 	 * 

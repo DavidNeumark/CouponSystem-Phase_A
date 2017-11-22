@@ -11,18 +11,23 @@ public class Company {
 	private String email;
 	Set<Coupon> coupons = new HashSet<>();
 
+	/**
+	 * Class CTOR
+	 */
 	public Company() {
 		super();
 
 	}
 
-	public Company(String compName, String password, String email) {
-		super();
-		this.compName = compName;
-		this.password = password;
-		this.email = email;
-	}
-
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param iD
+	 * @param compName
+	 * @param password
+	 * @param email
+	 * @param coupons
+	 */
 	public Company(long iD, String compName, String password, String email, Set<Coupon> coupons) {
 		super();
 		ID = iD;
@@ -32,17 +37,31 @@ public class Company {
 		this.coupons = coupons;
 	}
 
-	public Company(String compName, String password, String email, Set<Coupon> coupons) {
-		super();
-		this.compName = compName;
-		this.password = password;
-		this.email = email;
-		this.coupons = coupons;
-	}
-
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param iD
+	 * @param compName
+	 * @param password
+	 * @param email
+	 */
 	public Company(long iD, String compName, String password, String email) {
 		super();
 		ID = iD;
+		this.compName = compName;
+		this.password = password;
+		this.email = email;
+	}
+
+	/**
+	 * Class CTOR with parameters
+	 * 
+	 * @param compName
+	 * @param password
+	 * @param email
+	 */
+	public Company(String compName, String password, String email) {
+		super();
 		this.compName = compName;
 		this.password = password;
 		this.email = email;
@@ -90,8 +109,7 @@ public class Company {
 
 	@Override
 	public String toString() {
-		return "Company [ID=" + ID + ", compName=" + compName + ", password=" + password + ", email=" + email
-				+ ", coupons=" + coupons + "]";
+		return "Company [ID=" + ID + ", compName=" + compName + ", password=" + password + ", email=" + email + "]";
 	}
 
 	@Override

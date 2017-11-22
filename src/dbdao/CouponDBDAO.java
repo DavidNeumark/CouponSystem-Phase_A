@@ -6,7 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +13,6 @@ import beans.Company;
 import beans.Coupon;
 import beans.Customer;
 import connection.ConnectionPool;
-import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
 import dao.CouponDAO;
 import enumPackage.CouponType;
@@ -33,8 +31,10 @@ public class CouponDBDAO implements CouponDAO {
 
 	/**
 	 * Class CTOR
+	 * 
+	 * @throws CouponSystemException
 	 */
-	public CouponDBDAO() {
+	public CouponDBDAO() throws CouponSystemException {
 		pool = ConnectionPool.getInstance();
 	}
 
@@ -44,12 +44,10 @@ public class CouponDBDAO implements CouponDAO {
 	 * 
 	 * @param coupon
 	 * @return
-	 * @throws SQLException
 	 * @throws CouponSystemException
-	 * @throws ParseException
 	 */
 	@Override
-	public Coupon createCoupon(Coupon coupon) throws CouponSystemException, ParseException {
+	public Coupon createCoupon(Coupon coupon) throws CouponSystemException {
 		Connection con = this.pool.getConnection();
 		String sql = "insert into coupons(title, start_date, end_date, amount, type, message, price, image) values(?,?,?,?,?,?,?,?)";
 
@@ -83,7 +81,9 @@ public class CouponDBDAO implements CouponDAO {
 			}
 
 		} catch (SQLException e) {
-			throw new CouponSystemException("Can't create the coupon: " + coupon.getTitle(), e);
+			CouponSystemException ex = new CouponSystemException(
+					"The coupon: " + coupon.getTitle() + " was not created.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -93,8 +93,7 @@ public class CouponDBDAO implements CouponDAO {
 	 * Deletes the coupon data in three database tables: companyCoupon,
 	 * customerCoupon, coupons.
 	 * 
-	 * @param Coupon
-	 * @exception SQLException.
+	 * @param coupon
 	 * @throws CouponSystemException.
 	 */
 	@Override
@@ -126,8 +125,10 @@ public class CouponDBDAO implements CouponDAO {
 			pstmt3.executeUpdate();
 
 			System.out.println(coupon.getTitle() + " was removed from the system");
+
 		} catch (SQLException e) {
-			throw new CouponSystemException("Can't delete the coupon from the database", e);
+			CouponSystemException ex = new CouponSystemException("Can't delete the coupon from the database.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -137,8 +138,7 @@ public class CouponDBDAO implements CouponDAO {
 	/**
 	 * Updates the coupon data(startDate, endDate and price) in the database.
 	 * 
-	 * @param Coupon.
-	 * @exception SQLException.
+	 * @param coupon.
 	 * @throws CouponSystemException.
 	 */
 	@Override
@@ -158,7 +158,8 @@ public class CouponDBDAO implements CouponDAO {
 			}
 
 		} catch (SQLException e) {
-			throw new CouponSystemException("Can't update the coupon data", e);
+			CouponSystemException ex = new CouponSystemException("Can't update the coupon data", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -170,7 +171,6 @@ public class CouponDBDAO implements CouponDAO {
 	 * 
 	 * @param ID
 	 * @return
-	 * @throws SQLException
 	 * @throws CouponSystemException
 	 */
 	@Override
@@ -207,8 +207,8 @@ public class CouponDBDAO implements CouponDAO {
 			coupon = new Coupon(id1, title, startDate, endDate, amount, type, message, price, image);
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			throw new CouponSystemException("can't get the data of the coupon", e);
+			CouponSystemException ex = new CouponSystemException("Can't get the data of the coupon", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -216,10 +216,9 @@ public class CouponDBDAO implements CouponDAO {
 	}
 
 	/**
-	 * Gets all coupons data from the database.
+	 * Gets all coupons of the system from the database.
 	 * 
 	 * @return list of coupons
-	 * @throws SQLException
 	 * @throws CouponSystemException
 	 */
 	@Override
@@ -252,9 +251,9 @@ public class CouponDBDAO implements CouponDAO {
 			}
 
 		} catch (SQLException e) {
-			System.err.println("Couldn't connect the driver");
-			e.printStackTrace();
-
+			CouponSystemException ex = new CouponSystemException(
+					"Couldn't connect the driver. The list of all coupons was not created.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(currentConnection);
 		}
@@ -275,20 +274,14 @@ public class CouponDBDAO implements CouponDAO {
 	public Set<Coupon> getAllCoupons(Company company) throws CouponSystemException {
 		Coupon coupon;
 		Set<Coupon> coupons = new HashSet<>();
-		// String sql1 = "select id from companies where comp_name = ?";
-		String sql1 = "select * from coupons where id in (select coupons_id from companyCoupon where comp_id in (select id from companies where comp_name = ?))";
+		String sql = "select * from coupons where id in(select coupons_id from companyCoupon where comp_id = ?)";
 
 		Connection con = this.pool.getConnection();
 
-		try (
+		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
 
-				PreparedStatement pstmt1 = con.prepareStatement(sql1);
-		// PreparedStatement pstmt2 = con.prepareStatement(sql2);
-
-		) {
-
-			pstmt1.setString(1, company.getName());
-			ResultSet rs = pstmt1.executeQuery(sql1);
+			pstmt.setLong(1, company.getID());
+			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
 
@@ -309,9 +302,9 @@ public class CouponDBDAO implements CouponDAO {
 			return coupons;
 
 		} catch (SQLException e) {
-			System.err.println("Couldn't connect the driver");
-			e.printStackTrace();
-			return null;
+			CouponSystemException ex = new CouponSystemException(
+					"Can't get the list of all coupons of the company: " + company.getName() + " .", e);
+			throw ex;
 
 		} finally {
 			this.pool.returnConnection(con);
@@ -323,7 +316,7 @@ public class CouponDBDAO implements CouponDAO {
 	 * Gets the data for all coupons from a particular customer.
 	 * 
 	 * @param customer
-	 * @return
+	 * @return list of coupons
 	 * @throws CouponSystemException
 	 */
 	public Set<Coupon> getAllCoupons(Customer customer) throws CouponSystemException {
@@ -357,9 +350,9 @@ public class CouponDBDAO implements CouponDAO {
 			return coupons;
 
 		} catch (SQLException e) {
-			System.err.println("Couldn't connect the driver");
-			e.printStackTrace();
-			return null;
+			CouponSystemException ex = new CouponSystemException(
+					"Couldn't connect the driver. Can't get all coupons list of this customer.", e);
+			throw ex;
 
 		} finally {
 			this.pool.returnConnection(con);
@@ -372,10 +365,11 @@ public class CouponDBDAO implements CouponDAO {
 	 * 
 	 * @param couponType
 	 * @return
+	 * @throws CouponSystemException
 	 * @throws SQLException
 	 */
 	@Override
-	public Set<Coupon> getCouponByType(CouponType couponType) throws SQLException {
+	public Set<Coupon> getCouponByType(CouponType couponType) throws CouponSystemException, SQLException {
 
 		Connection con = this.pool.getConnection();
 		Set<Coupon> coupons = new HashSet<>();
@@ -416,8 +410,9 @@ public class CouponDBDAO implements CouponDAO {
 				}
 				System.out.println("Coupon was readed successfully by type:" + couponType);
 			} catch (SQLException e) {
-				System.err.println("Couldnt connect the driver");
-				e.printStackTrace();
+				CouponSystemException ex = new CouponSystemException(
+						"Couldn't connect the driver. Can't get all coupons list of this type.", e);
+				throw ex;
 			} finally {
 				this.pool.returnConnection(currentConnection);
 			}
@@ -429,8 +424,9 @@ public class CouponDBDAO implements CouponDAO {
 	 * Gets the coupon id using the coupon title.
 	 * 
 	 * @param coupon
+	 * @throws CouponSystemException
 	 */
-	public void getCouponIdByTitle(Coupon coupon) {
+	public void getCouponIdByTitle(Coupon coupon) throws CouponSystemException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select id from coupons where title = ?";
 
@@ -447,8 +443,8 @@ public class CouponDBDAO implements CouponDAO {
 			coupon.setID(id);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Can't set the id of this coupon");
+			CouponSystemException ex = new CouponSystemException("Can't set the id of this coupon", e);
+			throw ex;
 		} finally {
 			pool.returnConnection(con);
 		}
@@ -459,9 +455,9 @@ public class CouponDBDAO implements CouponDAO {
 	 * 
 	 * @param _title
 	 * @return
-	 * @throws CouponNotFound
+	 * @throws CouponSystemException
 	 */
-	public Coupon getCouponByTitle(String _title) throws CouponNotFound {
+	public Coupon getCouponByTitle(String _title) throws CouponSystemException {
 
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select * from coupons where title = ?";
@@ -491,12 +487,11 @@ public class CouponDBDAO implements CouponDAO {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("");
+			CouponSystemException ex = new CouponSystemException("Can't get the coupon data by title.", e);
+			throw ex;
 		} finally {
 			pool.returnConnection(con);
 		}
-		return null;
 	}
 
 }

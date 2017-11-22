@@ -1,7 +1,6 @@
 package test;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,16 +9,8 @@ import java.util.Set;
 import beans.Company;
 import beans.Coupon;
 import beans.Customer;
-import core.exceptions.CompanyNotFound;
-import core.exceptions.CouponNotFound;
 import core.exceptions.CouponSystemException;
-import core.exceptions.CreateCompanyExcetion;
-import core.exceptions.CustomerNotFound;
-import core.exceptions.EndDateException;
-import core.exceptions.MoreThanOneCouponException;
-import core.exceptions.PurchasedException;
 import couponSystemSingleton.CouponSystem;
-import dbdao.CouponDBDAO;
 import enumPackage.ClientType;
 import enumPackage.CouponType;
 import facade.AdminFacade;
@@ -28,9 +19,7 @@ import facade.CustomerFacade;
 
 public class CouponSystemTest {
 
-	public static void main(String[] args)
-			throws CreateCompanyExcetion, CouponSystemException, SQLException, ParseException, CouponNotFound,
-			CompanyNotFound, CustomerNotFound, EndDateException, MoreThanOneCouponException, PurchasedException {
+	public static void main(String[] args) throws SQLException, CouponSystemException {
 
 		Date utilStartDate1;
 		Date utilStartDate2;
@@ -46,8 +35,10 @@ public class CouponSystemTest {
 		utilEndDate1 = cal.getTime();
 		java.sql.Date sqlEndDate1 = convertUtilToSql(utilEndDate1);
 
-		Coupon coupon13 = new Coupon("coupon13Title", sqlStartDate1, sqlEndDate1, 45, CouponType.HEALTH, "message",
-				199.9, "image");
+		Coupon coupon15 = new Coupon("coupon15", sqlStartDate1, sqlEndDate1, 45, CouponType.HEALTH, "message", 199.9,
+				"image");
+		Coupon coupon16 = new Coupon("coupon16", sqlStartDate1, sqlEndDate1, 3, CouponType.HEALTH, "message", 2.9,
+				"image");
 
 		cal.set(2015, 4, 0);
 		utilStartDate2 = cal.getTime();
@@ -57,59 +48,88 @@ public class CouponSystemTest {
 		utilEndDate2 = cal.getTime();
 		java.sql.Date eDate2 = convertUtilToSql(utilEndDate2);
 
-		Coupon coupon14 = new Coupon("coupon14Title", sDate2, eDate2, 19, CouponType.TRAVELLING, "TRAVELLING.message",
-				122, "sports.image");
+		Coupon coupon14 = new Coupon("coupon14", sDate2, eDate2, 19, CouponType.TRAVELLING, "TRAVELLING.message", 122,
+				"sports.image");
 
 		Set<Coupon> coupons1 = new HashSet<>();
 
-		Customer customer15 = new Customer(45, "Customer15", "customer15@gmail.com", "customer15123", coupons1);
 		Customer customer16 = new Customer("Customer16", "customer16@gmail.com", "customer16123", coupons1);
+		Customer customer17 = new Customer("Customer17", "customer17@gmail.com", "customer17123", coupons1);
 
-		Company company22 = new Company("Company22", "company22123", "company22@mail.com");
 		Company company23 = new Company("Company23", "1234", "company23@mail.com");
 		Company company24 = new Company("Company24", "company24123", "company24@mail.com");
+		Company company25 = new Company("Company25", "company25123", "company25@mail.com");
+		try {
+			AdminFacade adminFacade = (AdminFacade) CouponSystem.getInstance().login("admin", "1234", ClientType.ADMIN);
 
-		AdminFacade adminFacade = (AdminFacade) CouponSystem.getInstance().login("admin", "1234", ClientType.ADMIN);
+			adminFacade.createCompany(company24);
+			adminFacade.createCompany(company25);
+			try {
+				adminFacade.createCompany(company25);
+			} catch (CouponSystemException e) {
+				System.out.println(e.getMessage());
+			}
+			// company24 = adminFacade.getCompanyByName("Company24");
+			company24.setEmail("company24@NEW_mail.com");
+			adminFacade.updateCompany(company24);
+			System.out.println(adminFacade.getCompany(company24.getID()));
+			System.out.println(adminFacade.getAllCompanies());
 
-		adminFacade.createCompany(company23);
-		company24 = adminFacade.getCompanyByName("Company21");
-		company24.setEmail("AAAAAA");
-		adminFacade.updateCompany(company24);
-		System.out.println(adminFacade.getCompany(21));
-		adminFacade.createCustomer(customer15);
-		customer16 = adminFacade.getCustomerByName("CustomerA");
-		customer16.setCustEmail("newUpdated");
-		adminFacade.updateCustomer(customer16);
-		System.out.println(adminFacade.getCustomer(35));
-		System.out.println(adminFacade.getAllCustomers());
-		adminFacade.removeCustomer(customer15);
-		adminFacade.deleteCompany(company22);
+			adminFacade.createCustomer(customer17);
+			adminFacade.createCustomer(customer16);
+			try {
+				adminFacade.createCustomer(customer16);
+			} catch (CouponSystemException e) {
+				System.out.println(e.getMessage());
+			}
+			// customer16 = adminFacade.getCustomerByName("Customer16");
+			customer16.setCustEmail("customer16@NEW_gmail.com");
+			adminFacade.updateCustomer(customer16);
+			System.out.println(adminFacade.getCustomer(customer16.getID()));
+			System.out.println(adminFacade.getAllCustomers());
 
-		CompanyFacade companyFacade = (CompanyFacade) CouponSystem.getInstance().login(company23.getName(),
-				company23.getPassword(), ClientType.COMPANY);
+			System.out.println("=============Delete=======================");
+			adminFacade.removeCustomer(customer17);
+			adminFacade.deleteCompany(company25);
 
-		CouponDBDAO couponDBDAO = new CouponDBDAO();
-		Coupon coupon2 = couponDBDAO.getCouponByTitle("coupon2");
-		coupon2.setTitle("coupon2NewTitle");
-		companyFacade.createCoupon(coupon13);
-		companyFacade.createCoupon(coupon14);
-		companyFacade.updateCoupon(coupon14);
-		System.out.println(companyFacade.getCoupon(2));
-		System.out.println(companyFacade.getAllCoupons());
-		System.out.println(companyFacade.getCouponByType(CouponType.CAMPING));
-		System.out.println(companyFacade.getCouponByPrice(11));
-		System.out.println(companyFacade.getCouponByDate(sDate2));
-		companyFacade.getCouponByTitle(coupon14.getTitle());
-		companyFacade.removeCoupon(coupon14);
+			CompanyFacade companyFacade = (CompanyFacade) CouponSystem.getInstance().login(company23.getName(),
+					company23.getPassword(), ClientType.COMPANY);
 
-		CustomerFacade customerFacade = (CustomerFacade) CouponSystem.getInstance().login("Customer15", "customer15123",
-				ClientType.CUSTOMER);
-		customerFacade.purchaseCoupon(coupon13);
-		System.out.println(customerFacade.getAllPurchasedCouponByType(CouponType.HEALTH));
-		System.out.println(customerFacade.getAllPurchasedCouponByPrice(coupon13.getPrice()));
+			System.out.println("=========companyFacade LOGIN test - OK===============");
 
-		CouponSystem couponSystem = null;
-		couponSystem.shutdown();
+			companyFacade.createCoupon(coupon16);
+			companyFacade.createCoupon(coupon15);
+			try {
+				companyFacade.createCoupon(coupon15);
+			} catch (CouponSystemException e) {
+				System.out.println(e.getMessage());
+			}
+			coupon14 = companyFacade.getCouponByTitle("coupon15");
+			coupon15.setTitle("NEW_coupon15");
+			companyFacade.updateCoupon(coupon15);
+			System.out.println(companyFacade.getCoupon(coupon15.getID()));
+			System.out.println(companyFacade.getAllCoupons());
+			System.out.println(companyFacade.getCouponByType(CouponType.CAMPING));
+			System.out.println(companyFacade.getCouponByPrice(11));
+			System.out.println(companyFacade.getCouponByDate(sDate2));
+			System.out.println(companyFacade.getCouponByTitle(coupon15.getTitle()));
+			companyFacade.removeCoupon(coupon16);
+
+			CustomerFacade customerFacade = (CustomerFacade) CouponSystem.getInstance().login("Customer6", "kim123",
+					ClientType.CUSTOMER);
+
+			coupon14 = customerFacade.getCouponByTitle("coupon1");
+			customerFacade.purchaseCoupon(coupon14);
+			System.out.println(customerFacade.getAllPurchasedCoupons());
+			System.out.println(customerFacade.getAllPurchasedCouponByType(CouponType.TRAVELLING));
+			System.out.println(customerFacade.getAllPurchasedCouponPrice(coupon14.getPrice()));
+
+			CouponSystem.getInstance().shutdown();
+
+		} catch (CouponSystemException e) {
+			// e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
 	}
 
 	private static java.sql.Date convertUtilToSql(java.util.Date uDate) {

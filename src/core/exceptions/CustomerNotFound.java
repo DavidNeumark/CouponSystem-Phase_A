@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class CustomerNotFound extends Exception {
+public class CustomerNotFound extends CouponSystemException {
 
 	/**
 	 * 

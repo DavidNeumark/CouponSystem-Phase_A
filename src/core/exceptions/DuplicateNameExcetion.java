@@ -1,6 +1,6 @@
 package core.exceptions;
 
-public class DuplicateNameExcetion extends RuntimeException {
+public class DuplicateNameExcetion extends CouponSystemException {
 
 	/**
 	 * 

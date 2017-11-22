@@ -13,7 +13,6 @@ import beans.Coupon;
 import connection.ConnectionPool;
 import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
-import core.exceptions.UpdateCompanyException;
 import dao.CompanyDao;
 import enumPackage.CouponType;
 
@@ -26,28 +25,61 @@ public class CompanyDBDAO implements CompanyDao {
 
 	/**
 	 * Class CTOR.
+	 * 
+	 * @throws CouponSystemException
 	 */
-	public CompanyDBDAO() {
+	public CompanyDBDAO() throws CouponSystemException {
 		pool = ConnectionPool.getInstance();
 	}
 
 	/**
-	 * Sets a company data in the companies database table. The id will be
-	 * automatically created by the database and this will set it in the company
-	 * object.
+	 * Login into a Company account.
 	 * 
-	 * @param Company
-	 * @throws SQLException
+	 * @param compName
+	 * @param compPassword
+	 * @return a boolean value
 	 * @throws CouponSystemException
 	 */
 	@Override
-	public Company createCompany(Company company) throws SQLException, CouponSystemException {
+	public boolean login(String compName, String compPassword) throws CouponSystemException {
+
+		String sql = "select * from companies where comp_name = ?";
+
+		try (Connection con = this.pool.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
+			pstmt.setString(1, compName);
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				if (compPassword.equals(rs.getString(3))) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+
+		} catch (SQLException e) {
+			CouponSystemException ex = new CouponSystemException("Login failed.", e);
+			throw ex;
+
+		}
+		return false;
+	}
+
+	/**
+	 * Sets a company data in the companies database table. The id will be
+	 * automatically created by the database and this method will set it in the
+	 * company object.
+	 * 
+	 * @param company
+	 * @return a company object
+	 * @throws CouponSystemException
+	 */
+	@Override
+	public Company createCompany(Company company) throws CouponSystemException {
 		Connection con = this.pool.getConnection();
 
 		/**
-		 * The "sql" object represents a precompiled SQL statement. The
-		 * "executeUpdate()" executes the "sql" statement in the PreparedStatement
-		 * object.
+		 * The "sql" object represents a SQL statement. The "executeUpdate()" executes
+		 * the "sql" statement in the PreparedStatement object.
 		 */
 		String sql = "insert into companies(comp_name, password, email) values(?,?,?)";
 		try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -79,65 +111,30 @@ public class CompanyDBDAO implements CompanyDao {
 					company.setID(gk.getLong(1));
 					return company;
 				} else {
-					throw new CouponSystemException("The company id was not generated in the database.");
+					throw new CouponSystemException("Can't set the id in the database.");
 				}
 			} else {
-				throw new CouponSystemException("The company was not created in the database.");
+				throw new CouponSystemException("The company data was not inserted in the database.");
 			}
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			CouponSystemException ex = new CouponSystemException("The company was not created in the database.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
-		return null;
 
-	}
-
-	/**
-	 * Inserts a new coupon data into companyCoupon database table.
-	 * 
-	 * @param comp_id,
-	 *            coupon_id
-	 * @exception SQLException.
-	 * @throws CouponSystemException.
-	 */
-	public boolean createCompanyCoupon(long comp_id, long coupon_id) throws CouponSystemException {
-
-		Connection con = this.pool.getConnection();
-		String sql = "insert into companyCoupon(comp_id, coupons_id) values(?, ?)";
-
-		try (PreparedStatement pstmt1 = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
-
-			pstmt1.setLong(1, comp_id);
-			pstmt1.setLong(2, coupon_id);
-			int rows = pstmt1.executeUpdate();
-			if (rows != 0) {
-				return true;
-			} else {
-				throw new CouponSystemException("The new row in companyCoupon database table was not inserted");
-			}
-
-		} catch (Exception e) {
-			throw new CouponSystemException(
-					"The coupon with ID: " + coupon_id + "was not inserted into the companyCoupon table.", e);
-
-		} finally {
-			this.pool.returnConnection(con);
-		}
 	}
 
 	/**
 	 * Deletes the company data from four database tables: customerCoupon, coupons,
 	 * customerCoupon and companies.
 	 * 
-	 * @param Company
-	 * @throws CouponSystemException
-	 * @exception SQLException.
+	 * @param company
 	 * @throws CouponSystemException.
 	 */
 	@Override
-	public void deleteCompany(Company company) throws SQLException {
+	public void deleteCompany(Company company) throws CouponSystemException {
 
 		Connection con = this.pool.getConnection();
 		long compId = company.getID();
@@ -169,11 +166,10 @@ public class CompanyDBDAO implements CompanyDao {
 			pstmt4.setLong(1, compId);
 			pstmt4.executeUpdate();
 
-		} catch (
-
-		SQLException e) {
-			System.out.println(e.getMessage());
-			System.out.println("Can't delete company: " + company.getName());
+		} catch (SQLException e) {
+			CouponSystemException ex = new CouponSystemException(
+					"Can't delete company: " + company.getName() + " from the database.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -183,14 +179,11 @@ public class CompanyDBDAO implements CompanyDao {
 	/**
 	 * Update the company data (password, email) in the database.
 	 * 
-	 * @param Company
-	 *            company an Company object.
-	 * @throws UpdateCompanyException
-	 * @exception SQLException.
+	 * @param company
 	 * @throws CouponSystemException.
 	 */
 	@Override
-	public void updateCompany(Company company) throws UpdateCompanyException {
+	public void updateCompany(Company company) throws CouponSystemException {
 		Connection con = this.pool.getConnection();
 		String sql = "update companies set password = ?, email = ? where id = ?";
 		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
@@ -200,7 +193,8 @@ public class CompanyDBDAO implements CompanyDao {
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
-			throw new UpdateCompanyException(company.getName() + " was not updated.", e);
+			CouponSystemException ex = new CouponSystemException(company.getName() + " was not updated.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -211,22 +205,16 @@ public class CompanyDBDAO implements CompanyDao {
 	 * Gets the data of the company from the database using the id.
 	 * 
 	 * @param ID.
-	 * @throws CouponSystemException
-	 * @exception SQLException.
 	 * @throws CouponSystemException.
 	 */
 	@Override
-	public Company getCompany(long ID) throws SQLException, CouponSystemException {
+	public Company getCompany(long ID) throws CouponSystemException {
 		Connection con = this.pool.getConnection();
 		Company company = null;
 
 		String sql = "select * from companies where id = ?";
 
-		try (
-
-				PreparedStatement pstmt = con.prepareStatement(sql);
-
-		) {
+		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
 
 			pstmt.setLong(1, ID);
 
@@ -244,24 +232,23 @@ public class CompanyDBDAO implements CompanyDao {
 			company.setCoupons(coupons);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("There are some issues to get the company data.");
+			CouponSystemException ex = new CouponSystemException("Can't get the company data.", e);
+			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
 		}
-		if (company == null) {
-			throw new CouponSystemException("The company with ID: " + ID + "has coupon.");
-		}
+
 		return company;
 	}
 
 	/**
 	 * Gets the data of all the companies.
 	 * 
-	 * @exception SQLException.
+	 * @return get company data
+	 * @throws CouponSystemException
 	 */
 	@Override
-	public Set<Company> getAllCompanies() {
+	public Set<Company> getAllCompanies() throws CouponSystemException {
 		Company company;
 		Set<Company> companies = new HashSet<>();
 		String sql = "select * from companies";
@@ -285,12 +272,16 @@ public class CompanyDBDAO implements CompanyDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("Can't get the list of all companies data.", e);
+			throw ex;
+
 		} finally {
 			this.pool.returnConnection(con);
 		}
 		if (companies.isEmpty()) {
-			System.out.println("There are no companies in the database table 'companies'");
+			CouponSystemException ex = new CouponSystemException(
+					"There are no companies in the database table 'companies'");
+			throw ex;
 		}
 		return companies;
 
@@ -299,10 +290,12 @@ public class CompanyDBDAO implements CompanyDao {
 	/**
 	 * Gets the data of all coupons from the database.
 	 * 
-	 * @exception SQLException.
+	 * @param company
+	 * @return list of all companies in the system
+	 * @throws CouponSystemException
 	 */
 	@Override
-	public Set<Coupon> getCoupons(Company company) throws SQLException {
+	public Set<Coupon> getCoupons(Company company) throws CouponSystemException {
 
 		Set<Coupon> coupons = new HashSet<>();
 
@@ -310,11 +303,7 @@ public class CompanyDBDAO implements CompanyDao {
 
 		Connection con = this.pool.getConnection();
 
-		try (
-
-				PreparedStatement pstmt = con.prepareStatement(sql);
-
-		) {
+		try (PreparedStatement pstmt = con.prepareStatement(sql);) {
 
 			pstmt.setLong(1, company.getID());
 			ResultSet rs = pstmt.executeQuery();
@@ -335,7 +324,9 @@ public class CompanyDBDAO implements CompanyDao {
 				coupons.add(c);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			CouponSystemException ex = new CouponSystemException("Can't get the list of coupons.", e);
+			throw ex;
+
 		} finally {
 			this.pool.returnConnection(con);
 		}
@@ -343,40 +334,13 @@ public class CompanyDBDAO implements CompanyDao {
 	}
 
 	/**
-	 * Login into a Company account.
-	 * 
-	 * @exception SQLException.
-	 */
-	@Override
-	public boolean login(String compName, String compPassword) throws SQLException {
-
-		String sql = "select * from companies where comp_name = ?";
-
-		try (Connection con = this.pool.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmt.setString(1, compName);
-			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
-				if (compPassword.equals(rs.getString(3))) {
-					return true;
-				}
-			} else {
-				return false;
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	/**
 	 * This method gets the company data from the database without using the id.
 	 * 
 	 * @param comp_name
-	 * @return
-	 * @throws CompanyNotFound
+	 * @return a company object
+	 * @throws CouponSystemException
 	 */
-	public Company getCompanyByName(String comp_name) throws CompanyNotFound {
+	public Company getCompanyByName(String comp_name) throws CouponSystemException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select * from companies where comp_name = ?";
 
@@ -400,20 +364,20 @@ public class CompanyDBDAO implements CompanyDao {
 			}
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("");
+			CouponSystemException ex = new CouponSystemException("Can't get the company data by this name.", e);
+			throw ex;
 		} finally {
 			pool.returnConnection(con);
 		}
-		return null;
 	}
 
 	/**
 	 * This method gets the id of the company using the name of the company.
 	 * 
 	 * @param company
+	 * @throws CouponSystemException
 	 */
-	public void getCompanyIdByName(Company company) {
+	public void getCompanyIdByName(Company company) throws CouponSystemException {
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select id from companies where comp_name = ?";
 
@@ -429,10 +393,42 @@ public class CompanyDBDAO implements CompanyDao {
 			company.setID(id);
 
 		} catch (SQLException e) {
-			e.printStackTrace();
-			System.out.println("Can't set the id of this company");
+			CouponSystemException ex = new CouponSystemException("Can't get the id of the company.", e);
+			throw ex;
 		} finally {
 			pool.returnConnection(con);
+		}
+	}
+
+	/**
+	 * Inserts a new coupon data into companyCoupon database table.
+	 * 
+	 * @param comp_id,
+	 *            coupon_id
+	 * @throws CouponSystemException.
+	 */
+	public boolean createCompanyCoupon(long comp_id, long coupon_id) throws CouponSystemException {
+
+		Connection con = this.pool.getConnection();
+		String sql = "insert into companyCoupon(comp_id, coupons_id) values(?, ?)";
+
+		try (PreparedStatement pstmt1 = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);) {
+
+			pstmt1.setLong(1, comp_id);
+			pstmt1.setLong(2, coupon_id);
+			int rows = pstmt1.executeUpdate();
+			if (rows != 0) {
+				return true;
+			} else {
+				throw new CouponSystemException("The coupon was not be inserted in the 'companyCoupon' database table");
+			}
+
+		} catch (Exception e) {
+			CouponSystemException ex = new CouponSystemException(
+					"The coupon with ID: \" + coupon_id + \"was not inserted into the companyCoupon table.", e);
+			throw ex;
+		} finally {
+			this.pool.returnConnection(con);
 		}
 	}
 

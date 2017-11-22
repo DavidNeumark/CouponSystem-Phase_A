@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.SQLException;
 import java.util.Set;
 
 import beans.Coupon;
@@ -56,10 +55,9 @@ public interface CustomerDAO {
 	 * 
 	 * @param customer
 	 * @return collection of coupons
-	 * @throws SQLException
 	 * @throws CouponSystemException
 	 */
-	public Set<Coupon> getCoupons(Customer customer) throws SQLException, CouponSystemException;
+	public Set<Coupon> getCoupons(Customer customer) throws CouponSystemException;
 
 	/**
 	 * Login into the customer account.

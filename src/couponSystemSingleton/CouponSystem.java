@@ -12,13 +12,17 @@ import facade.CompanyFacade;
 import facade.CouponClientFacade;
 import facade.CustomerFacade;
 
+/**
+ * @author D.Neumark
+ *
+ */
 public class CouponSystem {
 
 	private static CouponSystem instance;
 	private DailyCouponExpirationTask dailyCouponExpirationTask;
 	Thread dailyThread;
 
-	private CouponSystem() {
+	private CouponSystem() throws CouponSystemException {
 
 		dailyCouponExpirationTask = new DailyCouponExpirationTask();
 		dailyThread = new Thread(dailyCouponExpirationTask);
@@ -26,7 +30,7 @@ public class CouponSystem {
 
 	}
 
-	public static synchronized CouponSystem getInstance() {
+	public static synchronized CouponSystem getInstance() throws CouponSystemException {
 		if (instance == null) {
 			instance = new CouponSystem();
 		}

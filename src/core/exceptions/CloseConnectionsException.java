@@ -1,7 +1,6 @@
 package core.exceptions;
 
-
-public class CloseConnectionsException extends Exception {
+public class CloseConnectionsException extends CouponSystemException {
 
 	/**
 	 * 
@@ -11,9 +10,6 @@ public class CloseConnectionsException extends Exception {
 	public CloseConnectionsException() {
 		super();
 	}
-
-
-
 
 	public CloseConnectionsException(String message, Throwable cause) {
 		super(message, cause);
@@ -27,8 +23,4 @@ public class CloseConnectionsException extends Exception {
 		super(cause);
 	}
 
-	
-	
-	
-	
 }
