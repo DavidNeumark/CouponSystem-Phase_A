@@ -51,7 +51,7 @@ public class CompanyFacade implements CouponClientFacade {
 			companyDBDAO.createCompanyCoupon(company.getID(), coupon.getID());
 
 		} else {
-			throw new CouponSystemException("The coupon already exists in the database.");
+			throw new CouponSystemException("The coupon: " + coupon.getTitle() + ", already exists in the database.");
 		}
 		return coupon;
 
@@ -65,7 +65,7 @@ public class CompanyFacade implements CouponClientFacade {
 	 */
 	public void removeCoupon(Coupon coupon) throws CouponSystemException {
 
-		couponDBDAO.getCouponIdByTitle(coupon);
+		couponDBDAO.getCouponByTitle(coupon.getTitle());
 
 		couponDBDAO.deleteCoupon(coupon);
 

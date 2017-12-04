@@ -426,29 +426,41 @@ public class CouponDBDAO implements CouponDAO {
 	 * @param coupon
 	 * @throws CouponSystemException
 	 */
-	public void getCouponIdByTitle(Coupon coupon) throws CouponSystemException {
-		ConnectionPool pool = ConnectionPool.getInstance();
-		String sql = "select id from coupons where title = ?";
-
-		Connection con = this.pool.getConnection();
-
-		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-			pstmt.setString(1, coupon.getTitle());
-
-			ResultSet rs = pstmt.executeQuery();
-			rs.next();
-
-			long id = rs.getLong(1);
-			coupon.setID(id);
-
-		} catch (SQLException e) {
-			CouponSystemException ex = new CouponSystemException("Can't set the id of this coupon", e);
-			throw ex;
-		} finally {
-			pool.returnConnection(con);
-		}
-	}
+	// public Coupon getCouponIdByTitle(String title) throws CouponSystemException {
+	// ConnectionPool pool = ConnectionPool.getInstance();
+	// String sql = "select id from coupons where title = ?";
+	//
+	// Connection con = this.pool.getConnection();
+	//
+	// try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+	//
+	// pstmt.setString(1, title);
+	//
+	// ResultSet rs = pstmt.executeQuery();
+	// if (!rs.next()) {
+	// return null;
+	// }
+	//
+	// // Reaching here means that there's data to return (a coupon)
+	// // and so we parse it, create a coupon object, fill it with values and return
+	// it
+	//
+	// Coupon coupon = createCouponByResultSet(rs);
+	// return coupon;
+	//
+	// } catch (SQLException e) {
+	// CouponSystemException ex = new CouponSystemException("Can't set the id of
+	// this coupon", e);
+	// throw ex;
+	// } finally {
+	// pool.returnConnection(con);
+	// }
+	// }
+	//
+	// private Coupon createCouponByResultSet(ResultSet rs) {
+	//
+	// return null;
+	// }
 
 	/**
 	 * Gets the coupon id using the coupon title.
@@ -457,19 +469,21 @@ public class CouponDBDAO implements CouponDAO {
 	 * @return
 	 * @throws CouponSystemException
 	 */
-	public Coupon getCouponByTitle(String _title) throws CouponSystemException {
+	public Coupon getCouponByTitle(String _title) {
 
+		Coupon c = new Coupon();
 		ConnectionPool pool = ConnectionPool.getInstance();
 		String sql = "select * from coupons where title = ?";
 
 		Connection con = this.pool.getConnection();
 
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-
 			pstmt.setString(1, _title);
 
 			ResultSet rs = pstmt.executeQuery();
-			if (rs.next()) {
+			if (!rs.next()) {
+				return null;
+			} else {
 				long id = rs.getLong(1);
 				String title = rs.getString(2);
 				Date startDate = rs.getDate(3);
@@ -480,18 +494,17 @@ public class CouponDBDAO implements CouponDAO {
 				double price = rs.getDouble(8);
 				String image = rs.getString(9);
 
-				return new Coupon(id, title, startDate, endDate, amount, type, message, price, image);
-
-			} else {
-				return null;
+				c = new Coupon(id, title, startDate, endDate, amount, type, message, price, image);
 			}
-
 		} catch (SQLException e) {
-			CouponSystemException ex = new CouponSystemException("Can't get the coupon data by title.", e);
-			throw ex;
+			System.out.println(e.getMessage());
+			// CouponSystemException ex = new CouponSystemException("Can't get the coupon
+			// data by title.", e);
+			c = null;
 		} finally {
 			pool.returnConnection(con);
 		}
+		return c;
 	}
 
 }

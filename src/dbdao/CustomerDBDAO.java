@@ -12,7 +12,6 @@ import beans.Coupon;
 import beans.Customer;
 import connection.ConnectionPool;
 import core.exceptions.CouponSystemException;
-import core.exceptions.CustomerNotFound;
 import dao.CustomerDAO;
 import enumPackage.CouponType;
 
@@ -301,6 +300,7 @@ public class CustomerDBDAO implements CustomerDAO {
 	 */
 	public Customer getCustomerByName(String cust_name) throws CouponSystemException {
 
+		Customer c = null;
 		String sql = "select * from customers where cust_name = ?";
 
 		Connection con = this.pool.getConnection();
@@ -316,18 +316,20 @@ public class CustomerDBDAO implements CustomerDAO {
 				String email = rs.getString(3);
 				String password = rs.getString(4);
 
-				return new Customer(id, name, password, email);
+				c = new Customer(id, name, password, email);
 
 			} else {
-				throw new CustomerNotFound("Customer " + cust_name + " not found in the database.");
+				// throw new CustomerNotFound("Customer " + cust_name + " not found in the
+				// database.");
 			}
 
 		} catch (SQLException e) {
-			CouponSystemException ex = new CouponSystemException("Can't get the customer data from the database.", e);
-			throw ex;
+			System.out.println(e.getMessage());
 		} finally {
 			this.pool.returnConnection(con);
 		}
+
+		return c;
 	}
 
 	/**
