@@ -38,7 +38,7 @@ public class CustomerFacade implements CouponClientFacade {
 	 * @throws CouponSystemException
 	 */
 	public void purchaseCoupon(Coupon coupon) throws CouponSystemException {
-		couponDBDAO.getCouponIdByTitle(coupon);
+		couponDBDAO.getCouponByTitle(coupon.getTitle());
 		boolean check = false;
 
 		if (coupon.getAmount() > 0) {

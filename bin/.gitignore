@@ -1,11 +1,6 @@
-/beans/
-/connection/
 /core/
-/couponSystemSingleton/
-/couponSystemThread/
-/dao/
-/database/
-/dbdao/
-/enumPackage/
-/facade/
 /test/
+/dbdao/
+/facade/
+/connection/
+/couponSystemThread/

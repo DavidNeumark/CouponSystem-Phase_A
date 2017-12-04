@@ -11,7 +11,6 @@ import java.util.Set;
 import beans.Company;
 import beans.Coupon;
 import connection.ConnectionPool;
-import core.exceptions.CompanyNotFound;
 import core.exceptions.CouponSystemException;
 import dao.CompanyDao;
 import enumPackage.CouponType;
@@ -21,7 +20,7 @@ import enumPackage.CouponType;
  */
 public class CompanyDBDAO implements CompanyDao {
 
-	private ConnectionPool pool;
+	private ConnectionPool pool = ConnectionPool.getInstance();
 
 	/**
 	 * Class CTOR.
@@ -140,8 +139,8 @@ public class CompanyDBDAO implements CompanyDao {
 		long compId = company.getID();
 
 		String sql1 = "delete from customerCoupon where coupons_id in(select coupons_id from companyCoupon where comp_id = ?)";
-		String sql2 = "delete from coupons where id in (select coupons_id from companyCoupon where id = ?)";
-		String sql3 = "delete from companyCoupon where coupons_id in(select coupons_id from companyCoupon where comp_id = ?)";
+		String sql2 = "delete from coupons where id in(select coupons_id from companyCoupon where id = ?)";
+		String sql3 = "delete from companyCoupon where coupons_id in(select * from (select coupons_id from companyCoupon where comp_id = ?)as coupons_id)";
 		String sql4 = "delete from companies where id = ?";
 
 		try (PreparedStatement pstmt1 = con.prepareStatement(sql1);
@@ -167,8 +166,9 @@ public class CompanyDBDAO implements CompanyDao {
 			pstmt4.executeUpdate();
 
 		} catch (SQLException e) {
+			System.out.println(e.getMessage());
 			CouponSystemException ex = new CouponSystemException(
-					"Can't delete company: " + company.getName() + " from the database.", e);
+					"Can't delete the company: " + company.getName() + ", from the database.", e);
 			throw ex;
 		} finally {
 			this.pool.returnConnection(con);
@@ -340,11 +340,13 @@ public class CompanyDBDAO implements CompanyDao {
 	 * @return a company object
 	 * @throws CouponSystemException
 	 */
-	public Company getCompanyByName(String comp_name) throws CouponSystemException {
-		ConnectionPool pool = ConnectionPool.getInstance();
+	public Company getCompanyByName(String comp_name)// throws CouponSystemException
+	{
+		Company c = null;
+
 		String sql = "select * from companies where comp_name = ?";
 
-		Connection con = this.pool.getConnection();
+		Connection con = pool.getConnection();
 
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
 
@@ -357,18 +359,19 @@ public class CompanyDBDAO implements CompanyDao {
 				String password = rs.getString(3);
 				String email = rs.getString(4);
 
-				return new Company(id, name, password, email);
+				c = new Company(id, name, password, email);
 
-			} else {
-				throw new CompanyNotFound("Company " + comp_name + " not found.");
 			}
 
 		} catch (SQLException e) {
-			CouponSystemException ex = new CouponSystemException("Can't get the company data by this name.", e);
-			throw ex;
+			System.out.println(e.getMessage());
+			// CouponSystemException ex = new CouponSystemException("Can't get the company
+			// data by this name.", e);
+
 		} finally {
 			pool.returnConnection(con);
 		}
+		return c;
 	}
 
 	/**

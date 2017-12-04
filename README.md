@@ -1,2 +1,2 @@
 # CouponSystem
-this is coupon system
+uses MySQL

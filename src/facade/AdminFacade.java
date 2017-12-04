@@ -56,27 +56,37 @@ public class AdminFacade implements CouponClientFacade {
 	 */
 	public Company createCompany(Company comp) throws CouponSystemException {
 
-		Set<Company> companies = companyDBDAO.getAllCompanies();
-		boolean checker = true;
-
 		try {
-			if (!companies.isEmpty()) {
+			Company check = companyDBDAO.getCompanyByName(comp.getName());
+			if (check == null) {
+				companyDBDAO.createCompany(comp);
+			} else {
+				throw new CouponSystemException("The company: " + comp.getName()
+						+ " could not be created, because this name already exists in the database. ");
+			}
 
-				// checking if the company name already exists in the database. If this name
-				// already exists in the database, the attribute "checker" will receive "false".
-				for (Company company : companies) {
-					if (company.getName().equals(comp.getName())) {
-						checker = false;
-						break;
-					}
-				}
-			}
-			if (checker) {
-				return companyDBDAO.createCompany(comp);
-			}
+			// Set<Company> companies = companyDBDAO.getAllCompanies();
+			// boolean checker = true;
+
+			// try {
+			// if (!companies.isEmpty()) {
+			//
+			// // checking if the company name already exists in the database. If this name
+			// // already exists in the database, the attribute "checker" will receive
+			// "false".
+			// for (Company company : companies) {
+			// if (company.getName().equals(comp.getName())) {
+			// checker = false;
+			// break;
+			// }
+			// }
+			// }
+			// if (checker) {
+			// return companyDBDAO.createCompany(comp);
+			// }
 		} catch (CouponSystemException e) {
 			CouponSystemException ex = new CouponSystemException(
-					"Name " + comp.getName() + " already exist on the data base", e);
+					"The company name: " + comp.getName() + " already exist on the data base", e);
 			throw ex;
 		}
 		return null;
@@ -177,25 +187,31 @@ public class AdminFacade implements CouponClientFacade {
 	 * @throws CouponSystemException
 	 */
 	public void createCustomer(Customer customer) throws CouponSystemException {
+		try {
+			Customer checker = customerDBDAO.getCustomerByName(customer.getCustName());
 
-		Set<Customer> customers = customerDBDAO.getAllCustomers();
-		boolean checker = true;
-
-		// checking if the customer name already exists in the database. If this name
-		// already exists in the database, the attribute "checker" will receive "false".
-		if (!customers.isEmpty()) {
-			for (Customer cust : customers) {
-				if (cust.getCustName().equals(customer.getCustName())) {
-					checker = false;
-					break;
-				}
+			if (checker == null) {
+				customerDBDAO.createCustomer(customer);
 			}
-		}
-		if (checker) {
-			customerDBDAO.createCustomer(customer);
 
-		} else {
-			throw new DuplicateNameExcetion("The client: " + customer.getCustName()
+			// Set<Customer> customers = customerDBDAO.getAllCustomers();
+			// boolean checker = true;
+
+			// checking if the customer name already exists in the database. If this name
+			// already exists in the database, the attribute "checker" will receive "false".
+			// if (!customers.isEmpty()) {
+			// for (Customer cust : customers) {
+			// if (cust.getCustName().equals(customer.getCustName())) {
+			// checker = false;
+			// break;
+			// }
+			// }
+			// }
+			// if (checker) {
+			// customerDBDAO.createCustomer(customer);
+
+		} catch (CouponSystemException e) {
+			throw new DuplicateNameExcetion("The customer: " + customer.getCustName()
 					+ " could not be created, because this name already exists in the database. ");
 
 		}
