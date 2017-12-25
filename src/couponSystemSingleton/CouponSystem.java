@@ -26,7 +26,7 @@ public class CouponSystem {
 
 		dailyCouponExpirationTask = new DailyCouponExpirationTask();
 		dailyThread = new Thread(dailyCouponExpirationTask);
-		dailyThread.start();
+		// dailyThread.start();
 
 	}
 

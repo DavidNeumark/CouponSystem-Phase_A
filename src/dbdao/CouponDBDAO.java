@@ -53,8 +53,11 @@ public class CouponDBDAO implements CouponDAO {
 
 		try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
+			String strDate = coupon.getStartDate();
+			Date date = new
+
 			pstmt.setString(1, coupon.getTitle());
-			pstmt.setDate(2, (Date) coupon.getStartDate());
+			pstmt.setDate(2, date);
 			pstmt.setDate(3, (Date) coupon.getEndDate());
 			pstmt.setInt(4, coupon.getAmount());
 			pstmt.setString(5, CouponType.convertToString(coupon.getType()));

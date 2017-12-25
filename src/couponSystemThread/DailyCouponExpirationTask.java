@@ -16,7 +16,6 @@ public class DailyCouponExpirationTask implements Runnable {
 	private static CouponDBDAO couponDBDAO;
 
 	public DailyCouponExpirationTask() throws CouponSystemException {
-		// this.couponDBDAO = new CouponDBDAO();
 	}
 
 	public void stopTask() {
