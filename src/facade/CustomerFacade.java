@@ -168,4 +168,12 @@ public class CustomerFacade implements CouponClientFacade {
 
 		return null;
 	}
+
+	public Set<Coupon> getAllSystemCoupons() throws CouponSystemException {
+
+		Set<Coupon> coupons = this.couponDBDAO.getAllSystemCoupons();
+
+		return coupons;
+	}
+
 }

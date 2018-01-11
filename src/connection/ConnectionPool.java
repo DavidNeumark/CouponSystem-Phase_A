@@ -21,15 +21,15 @@ public class ConnectionPool {
 	private Set<Connection> connections = new HashSet<>();
 	private Set<Connection> connectionsB = new HashSet<>();
 
-	// private String dbName = "sql11207844";
-	// private String userName = "sql11207844";
-	// private String password = "xKQsauXEBI";
-	// private String hostname = "sql11.freemysqlhosting.net";
-	// private String port = "3306";
-	// private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName +
-	// "?user=" + userName + "&password="
-	// + password;
-	private String url = "jdbc:mysql://localhost:3306/db1?autoReconnect=true&useSSL=false";
+	private String dbName = "sql11215161";
+	private String userName = "sql11215161";
+	private String password = "XvFKZj3j8e";
+	private String hostname = "sql11.freemysqlhosting.net";
+	private String port = "3306";
+	private String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password="
+			+ password;
+	// private String url =
+	// "jdbc:mysql://localhost:3306/db1?autoReconnect=true&useSSL=false";
 	// private String url = "jdbc:derby://localhost:1527/db2";
 
 	private ConnectionPool() {
@@ -46,8 +46,8 @@ public class ConnectionPool {
 
 		for (int i = 0; i < MAX_CON; i++) {
 			try {
-				// Connection con = DriverManager.getConnection(url);
-				Connection con = DriverManager.getConnection(url, "root", "root");
+				Connection con = DriverManager.getConnection(url);
+				// Connection con = DriverManager.getConnection(url, "root", "root");
 				connections.add(con);
 				connectionsB.add(con);
 			} catch (SQLException e) {

@@ -14,8 +14,8 @@ public class Coupon implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private long ID; // 1
 	private String title; // 2
-	private String startDate; // 3
-	private String endDate; // 4
+	private Date startDate; // 3
+	private Date endDate; // 4
 	private int amount; // 5
 	private CouponType type;// 6
 	private String message; // 7

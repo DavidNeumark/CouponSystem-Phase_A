@@ -14,8 +14,8 @@ public class CouponSystemDatabase {
 
 	public static void main(String[] args) throws CouponSystemException {
 
-		// String driverName = "org.apache.derby.jdbc.ClientDriver";
-		String driverName = "com.mysql.jdbc.Driver";
+		String driverName = "org.apache.derby.jdbc.ClientDriver";
+		// String driverName = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driverName);
 		} catch (ClassNotFoundException e1) {
@@ -23,10 +23,10 @@ public class CouponSystemDatabase {
 			throw ex;
 		}
 
-		// URL to the database
-		String dbName = "sql11207844";
-		String userName = "sql11207844";
-		String password = "xKQsauXEBI";
+		// URL to the database MySqlCloud
+		String dbName = "sql11215161";
+		String userName = "sql11215161";
+		String password = "XvFKZj3j8e";
 		String hostname = "sql11.freemysqlhosting.net";
 		String port = "3306";
 		String url = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?user=" + userName + "&password="

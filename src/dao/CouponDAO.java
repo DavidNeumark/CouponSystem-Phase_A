@@ -3,6 +3,7 @@ package dao;
 import java.sql.SQLException;
 import java.util.Set;
 
+import beans.Company;
 import beans.Coupon;
 import core.exceptions.CouponSystemException;
 import enumPackage.CouponType;
@@ -49,7 +50,7 @@ public interface CouponDAO {
 	 * @return collection of all coupon types
 	 * @throws CouponSystemException
 	 */
-	public Set<Coupon> getAllCoupons() throws CouponSystemException;
+	public Set<Coupon> getAllCoupons(Company company) throws CouponSystemException;
 
 	/**
 	 * Gets the data for all coupons of a given type
