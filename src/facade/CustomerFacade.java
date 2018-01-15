@@ -80,11 +80,8 @@ public class CustomerFacade implements CouponClientFacade {
 		return coupons;
 	}
 
-	// this method have some issues, don't use it!
 	public Set<Coupon> getAllCouponsThatWereNotPurchased() throws CouponSystemException {
 
-		// Set<Coupon> coupons =
-		// this.couponDBDAO.getAllCouponsThatWereNotPurchased(customer);
 		Set<Coupon> systemCoupons = this.couponDBDAO.getAllSystemCoupons();
 		Set<Coupon> customerCoupons = this.getAllPurchasedCoupons();
 		Set<Coupon> notPurchasedCoupons = this.couponDBDAO.getAllSystemCoupons();
