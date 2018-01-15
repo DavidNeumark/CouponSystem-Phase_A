@@ -362,6 +362,49 @@ public class CouponDBDAO implements CouponDAO {
 
 	}
 
+	// there are some issues with this method!!
+	public Set<Coupon> getAllCouponsThatWereNotPurchased(Customer customer) throws CouponSystemException {
+		Coupon coupon;
+		Set<Coupon> coupons = new HashSet<>();
+		String sql1 = "select * from coupons where id not in (select coupons_id from customerCoupon where cust_id = ?)";
+
+		Connection con = this.pool.getConnection();
+
+		try (PreparedStatement pstmt1 = con.prepareStatement(sql1);) {
+
+			pstmt1.setLong(1, customer.getID());
+			ResultSet rs = pstmt1.executeQuery(sql1);
+
+			while (rs.next()) {
+
+				long id = rs.getLong(1);
+				String title = rs.getString(2);
+				Date startDate = rs.getDate(3);
+				Date endDate = rs.getDate(4);
+				int amount = rs.getInt(5);
+				CouponType type = CouponType.valueOf(rs.getString(6));
+				String message = rs.getString(7);
+				double price = rs.getDouble(8);
+				String image = rs.getString(9);
+
+				coupon = new Coupon(id, title, startDate, endDate, amount, type, message, price, image);
+				coupons.add(coupon);
+
+			}
+			return coupons;
+
+		} catch (SQLException e) {
+			CouponSystemException ex = new CouponSystemException(
+					"There are some issues with the SQL. Can't get all coupons that were not purchased of this customer.",
+					e);
+			throw ex;
+
+		} finally {
+			this.pool.returnConnection(con);
+		}
+
+	}
+
 	/**
 	 * Gets the data for all coupons of a given type.
 	 * 

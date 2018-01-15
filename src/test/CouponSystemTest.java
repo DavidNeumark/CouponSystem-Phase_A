@@ -37,7 +37,7 @@ public class CouponSystemTest {
 
 		Coupon coupon15 = new Coupon("coupon15", sqlStartDate1, sqlEndDate1, 45, CouponType.FOOD, "message", 199.9,
 				"image");
-		Coupon coupon16 = new Coupon("coupon17", sqlStartDate1, sqlEndDate1, 3, CouponType.HEALTH, "message", 3,
+		Coupon coupon16 = new Coupon("car rental", sqlStartDate1, sqlEndDate1, 3, CouponType.TRAVELLING, "message", 3,
 				"image");
 
 		cal.set(2015, 4, 0);
@@ -93,13 +93,13 @@ public class CouponSystemTest {
 			// adminFacade.removeCustomer(customer16);
 			// adminFacade.deleteCompany(company35);
 			// System.out.println("OK");
-			CompanyFacade companyFacade = (CompanyFacade) CouponSystem.getInstance().login("Company24", "1234",
+			CompanyFacade companyFacade = (CompanyFacade) CouponSystem.getInstance().login("company", "1234",
 					ClientType.COMPANY);
 
 			System.out.println("=========companyFacade LOGIN test===============");
 
 			// companyFacade.createCoupon(coupon15);
-			// companyFacade.createCoupon(coupon15);
+			// companyFacade.createCoupon(coupon16);
 			// try {
 			// companyFacade.createCoupon(coupon15);
 			// } catch (CouponSystemException e) {
@@ -117,12 +117,14 @@ public class CouponSystemTest {
 			// System.out.println(companyFacade.getCouponByTitle(coupon16.getTitle()));
 			// companyFacade.removeCoupon(coupon16);
 			//
-			CustomerFacade customerFacade = (CustomerFacade) CouponSystem.getInstance().login("Customer17", "1234",
+			CustomerFacade customerFacade = (CustomerFacade) CouponSystem.getInstance().login("customer", "1234",
 					ClientType.CUSTOMER);
 			//
-			coupon15 = customerFacade.getCouponByTitle("coupon15");
-			customerFacade.purchaseCoupon(coupon15);
-			// System.out.println(customerFacade.getAllPurchasedCoupons());
+			// coupon15 = customerFacade.getCouponByTitle("coupon15");
+
+			// customerFacade.purchaseCoupon(coupon15);
+			System.out.println(customerFacade.getAllPurchasedCoupons());
+			System.out.println(customerFacade.getAllCouponsThatWereNotPurchased());
 			// System.out.println(customerFacade.getAllPurchasedCouponByType(CouponType.HEALTH));
 			// System.out.println(customerFacade.getAllPurchasedCouponPrice(4));
 
