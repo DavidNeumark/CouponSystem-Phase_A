@@ -174,9 +174,10 @@ public class AdminFacade implements CouponClientFacade {
 	 * @param company
 	 * @throws CouponSystemException
 	 */
-	public void getCompanyIdByName(Company company) throws CouponSystemException {
+	public long getCompanyIdByName(Company company) throws CouponSystemException {
 
 		companyDBDAO.getCompanyIdByName(company);
+		return company.getID();
 
 	}
 

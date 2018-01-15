@@ -55,7 +55,7 @@ public enum CouponType {
 
 		switch (type) {
 		case RESTAURANTS:
-			couponType = "RESTURANTS";
+			couponType = "RESTAURANTS";
 			break;
 		case ELECTRICITY:
 			couponType = "ELECTRICITY";

@@ -119,7 +119,7 @@ public class CompanyFacade implements CouponClientFacade {
 
 		Set<Coupon> couponsByType = new HashSet<>();
 
-		for (Coupon coupon : couponDBDAO.getAllCoupons()) {
+		for (Coupon coupon : couponDBDAO.getAllCoupons(company)) {
 			if (coupon.getType() == couponType) {
 				couponsByType.add(coupon);
 			}
@@ -140,7 +140,7 @@ public class CompanyFacade implements CouponClientFacade {
 
 		Set<Coupon> couponsByPrice = new HashSet<>();
 
-		for (Coupon coupon : couponDBDAO.getAllCoupons()) {
+		for (Coupon coupon : couponDBDAO.getAllCoupons(company)) {
 			if (coupon.getPrice() <= couponPrice) {
 				couponsByPrice.add(coupon);
 			}
@@ -162,7 +162,7 @@ public class CompanyFacade implements CouponClientFacade {
 
 		Set<Coupon> getCouponByExpirationDate = new HashSet<>();
 
-		for (Coupon coupon : couponDBDAO.getAllCoupons()) {
+		for (Coupon coupon : couponDBDAO.getAllCoupons(company)) {
 
 			if (coupon.getEndDate().before(date)) {
 				getCouponByExpirationDate.add(coupon);
